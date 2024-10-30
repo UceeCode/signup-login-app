@@ -16,3 +16,45 @@ app.set('view-engine', 'ejs');
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log("MongoDb connected"))
     .catch(err => console.error("MongoDb connection error", err));
+
+//routes
+//signup route(GET) - sets a route to display sign up form when user accesses /signup.
+app.get('/signup', (req, res) => res.render('signup'));
+
+//login route(GET) - sets a route to display log in form when user accesses /login
+app.get('/login', (req, res) => res.render('login')); 
+
+//SIGNUP ROUTE (POST)
+
+app.post('/signup', async (req, res) => {
+    const { name, email, password } = req.body;
+    const hashedpassword = await bcrypt.hash(password, 10);
+
+    const user = new User ({
+        name,
+        email, 
+        password: hashedpassword,
+    });
+
+    try {
+        await user.save();
+        res.redirect('/login');
+    } catch (error) {
+        res.status(500).send('error signing up');
+    }
+})
+
+//LOGIN ROUTE (POST)
+
+app.post('/login', async (req, res) => {
+    const {email, password} = req.body;
+
+    const user = await User.findOne({email});
+    if(user && (await bcrypt.compare(password, user.password))){
+        res.send('Login sucesss');
+    } else {
+        res.status(401).send('invalid');
+    }
+});
+
+app.listen(process.env.PORT, () => console.log(`Server running on port ${process.env.PORT}`));
