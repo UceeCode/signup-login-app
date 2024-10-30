@@ -11,10 +11,10 @@ const app = express(); // Creates an instance of an Express application
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json()); // Add this line to handle JSON bodies
 app.use(express.static('public'));
-app.set('view engine', 'ejs'); // Correct view engine setting
+app.set('view engine', 'ejs'); // view engine setting
 
 
-// Connect to MongoDB (Removed deprecated options)
+// Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log("MongoDB connected"))
     .catch(err => console.error("MongoDB connection error", err));
